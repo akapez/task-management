@@ -1,15 +1,18 @@
 import { FC } from "react";
 
+import { Task } from "@utils/types";
 import { Add, Record } from "iconsax-react";
 
 import { Button } from "@components/ui/button";
 
+import TaskCard from "./task-card";
+
 interface ColumnProps {
   title: string;
-  cards: string[];
+  tasks: Task[];
 }
 
-const Board: FC<ColumnProps> = ({ title, cards }) => {
+const Board: FC<ColumnProps> = ({ title, tasks }) => {
   let circleColor: string = "#FF8A65";
   switch (title) {
     case "Todo":
@@ -26,12 +29,12 @@ const Board: FC<ColumnProps> = ({ title, cards }) => {
       break;
   }
   return (
-    <div className="border-dark-100 flex w-1/3 flex-col rounded-lg border-2 border-dashed p-4">
+    <div className="flex w-1/3 flex-col rounded-lg border-2 border-dashed border-dark-100 p-4">
       <div className="flex items-center justify-between rounded-lg bg-white px-4 py-4 shadow-sm">
         <div className="flex items-center gap-2">
           <Record size="32" color={circleColor} />
           <h2 className="text-base font-bold text-gray-900">{title}</h2>
-          <span className="bg-primary-50 text-primary-500 flex h-5 w-5 items-center justify-center rounded-full px-2 text-xs font-semibold">
+          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary-50 px-2 text-xs font-semibold text-primary-500">
             4
           </span>
         </div>
@@ -40,10 +43,16 @@ const Board: FC<ColumnProps> = ({ title, cards }) => {
         </Button>
       </div>
       <div className="mt-4 flex flex-col gap-4">
-        {cards.map((card, index) => (
-          <div key={index} className="rounded bg-blue-50 p-4 shadow-sm">
-            {card}
-          </div>
+        {tasks.map((task) => (
+          <TaskCard
+            key={task.id}
+            title={task.title}
+            description={task.description}
+            date={task.due_date}
+            priority={task.priority}
+            status={task.status}
+            avatarUrl={task.avatar_url}
+          />
         ))}
       </div>
     </div>
