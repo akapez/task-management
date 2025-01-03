@@ -3,6 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import "./globals.css";
 
+import LeftNavigation from "@components/left-navigation";
+import TopSearchBar from "@components/top-search-bar";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -28,7 +31,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <div className="flex flex-col">
+          <TopSearchBar />
+          <div className="flex">
+            <LeftNavigation />
+            <main className="ml-60 mt-16 flex-1 bg-gray-100 p-4">
+              {children}
+            </main>
+          </div>
+        </div>
       </body>
     </html>
   );
