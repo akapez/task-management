@@ -34,8 +34,6 @@ const Drawer: FC<DrawerProps> = ({
     return null;
   }
 
-  console.log("Drawer rendered");
-
   return (
     <div className="fixed inset-0 z-50 flex">
       <div

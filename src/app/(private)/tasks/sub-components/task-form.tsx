@@ -1,12 +1,15 @@
-import { Fragment } from "react";
+import { FC, Fragment } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTask, useToast } from "@hooks";
 import { cn } from "@lib/utils";
+import { Task, TaskPriority, TaskStatus } from "@utils/types";
 import { taskSchema, TaskSchema } from "@validations/task";
 import { format } from "date-fns";
 import { Calendar2, DocumentText, Flag, Record, User } from "iconsax-react";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { v4 as uuidv4 } from "uuid";
 
 import { Avatar, AvatarImage } from "@components/ui/avatar";
 import { Button } from "@components/ui/button";
@@ -36,7 +39,13 @@ import { Textarea } from "@components/ui/text-area";
 
 import { users } from "../../../../data";
 
-const TaskForm = () => {
+interface TaskFormProps {
+  setOpenDrawer: (state: boolean) => void;
+}
+
+const TaskForm: FC<TaskFormProps> = ({ setOpenDrawer }) => {
+  const { toast } = useToast();
+  const { addTask } = useTask();
   const form = useForm<TaskSchema>({
     resolver: zodResolver(taskSchema),
     defaultValues: {
@@ -52,7 +61,22 @@ const TaskForm = () => {
   } = form;
 
   const onSubmit: SubmitHandler<TaskSchema> = async (data) => {
-    console.log(data);
+    const date = new Date(data.due_date);
+    const unixTimestamp = Math.floor(date.getTime() / 1000);
+    const task: Task = {
+      id: uuidv4(),
+      title: data.title,
+      description: data.description,
+      status: data.status as TaskStatus,
+      due_date: unixTimestamp,
+      assignee: data.assignee,
+      priority: data.priority as TaskPriority,
+    };
+    addTask(task);
+    setOpenDrawer(false);
+    toast({
+      title: "Task created",
+    });
   };
 
   return (

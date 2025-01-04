@@ -3,6 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import "./globals.css";
 
+import { StoreProvider } from "@redux/provider";
+import { Toaster } from "@utils/toast-provider";
+
 import LeftNavigation from "@components/left-navigation";
 import TopSearchBar from "@components/top-search-bar";
 
@@ -31,15 +34,18 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="flex flex-col">
-          <TopSearchBar />
-          <div className="flex">
-            <LeftNavigation />
-            <main className="ml-60 mt-16 h-screen flex-1 bg-gray-50 p-4">
-              {children}
-            </main>
+        <StoreProvider>
+          <div className="flex flex-col">
+            <TopSearchBar />
+            <div className="flex">
+              <LeftNavigation />
+              <main className="ml-60 mt-16 h-screen flex-1 bg-gray-50 p-4">
+                {children}
+              </main>
+            </div>
           </div>
-        </div>
+          <Toaster />
+        </StoreProvider>
       </body>
     </html>
   );

@@ -1,14 +1,16 @@
 import { FC } from "react";
 
-import { Task } from "@utils/types";
+import { useDroppable } from "@dnd-kit/core";
+import { Column, Task } from "@utils/types";
 import { Add, Record } from "iconsax-react";
 
 import { Button } from "@components/ui/button";
 
+import { users } from "../../../../data";
 import TaskCard from "./task-card";
 
 interface BoardProps {
-  title: string;
+  column: Column;
   tasks: Task[];
   count: number;
   onOpenDrawer: () => void;
@@ -16,21 +18,24 @@ interface BoardProps {
 }
 
 const Board: FC<BoardProps> = ({
-  title,
+  column,
   tasks,
   count,
   onOpenDrawer,
   setDrawerType,
 }) => {
+  const { setNodeRef } = useDroppable({
+    id: column.id,
+  });
   let circleColor: string = "#FF8A65";
-  switch (title) {
-    case "Todo":
+  switch (column.id) {
+    case "TODO":
       circleColor = "#FF8A65";
       break;
-    case "In Progress":
+    case "IN_PROGRESS":
       circleColor = "#0C6FBF";
       break;
-    case "Completed":
+    case "COMPLETED":
       circleColor = "#2A7E2E";
       break;
     default:
@@ -44,11 +49,14 @@ const Board: FC<BoardProps> = ({
   };
 
   return (
-    <div className="flex w-1/3 flex-col rounded-lg border-2 border-dashed border-dark-100 p-4">
+    <div
+      ref={setNodeRef}
+      className="flex w-1/3 flex-col rounded-lg border-2 border-dashed border-dark-100 p-4"
+    >
       <div className="flex items-center justify-between rounded-lg bg-white px-4 py-4 shadow-sm">
         <div className="flex items-center gap-2">
           <Record size="32" color={circleColor} />
-          <h2 className="text-base font-bold text-gray-900">{title}</h2>
+          <h2 className="text-base font-bold text-gray-900">{column.title}</h2>
           <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary-50 px-2 text-xs font-semibold text-primary-500">
             {count}
           </span>
@@ -63,18 +71,24 @@ const Board: FC<BoardProps> = ({
         </Button>
       </div>
       <div className="mt-4 flex flex-col gap-4">
-        {tasks.map((task) => (
-          <TaskCard
-            onOpenDrawer={() => handleDrawerOpen("EDIT")}
-            key={task.id}
-            title={task.title}
-            description={task.description}
-            date={task.due_date}
-            priority={task.priority}
-            status={task.status}
-            avatarUrl={task.avatar_url}
-          />
-        ))}
+        {tasks.map((task) => {
+          const assigneeDetails = users.find(
+            (user) => user.id === task.assignee
+          );
+          return (
+            <TaskCard
+              onOpenDrawer={() => handleDrawerOpen("EDIT")}
+              key={task.id}
+              id={task.id}
+              title={task.title}
+              description={task.description}
+              date={task.due_date}
+              priority={task.priority}
+              status={task.status}
+              avatarUrl={assigneeDetails?.avatar_url || ""}
+            />
+          );
+        })}
         <Button
           variant="ghost"
           aria-label="Add Task"

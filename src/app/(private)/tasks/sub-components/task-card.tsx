@@ -1,6 +1,8 @@
 import { FC, Fragment } from "react";
 
+import { useDraggable } from "@dnd-kit/core";
 import { formattedDueDate, getDueDateMessage } from "@utils/helpers";
+import { TaskPriority, TaskStatus } from "@utils/types";
 import { Clock, TickCircle } from "iconsax-react";
 
 import { Avatar, AvatarImage } from "@components/ui/avatar";
@@ -9,16 +11,18 @@ import { Card, CardContent, CardFooter, CardHeader } from "@components/ui/card";
 import { Separator } from "@components/ui/separator";
 
 interface TaskCardProps {
-  status: "TODO" | "IN_PROGRESS" | "COMPLETED";
+  id: string;
+  status: TaskStatus;
   title: string;
   description: string;
   date: number;
-  priority: "LOW" | "MEDIUM" | "HIGH";
+  priority: TaskPriority;
   avatarUrl: string;
   onOpenDrawer: () => void;
 }
 
 const TaskCard: FC<TaskCardProps> = ({
+  id,
   status,
   title,
   description,
@@ -27,6 +31,9 @@ const TaskCard: FC<TaskCardProps> = ({
   avatarUrl,
   onOpenDrawer,
 }) => {
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: id,
+  });
   let badgeColor: string = "bg-blue-100 text-blue-500 hover:bg-blue-100";
   switch (priority) {
     case "LOW":
@@ -42,8 +49,22 @@ const TaskCard: FC<TaskCardProps> = ({
       badgeColor = "bg-blue-100 text-blue-500 hover:bg-blue-100";
       break;
   }
+
+  const style = transform
+    ? {
+        transform: `translate(${transform.x}px, ${transform.y}px)`,
+      }
+    : undefined;
+
   return (
-    <Card className="w-full cursor-pointer" onClick={onOpenDrawer}>
+    <Card
+      // onClick={onOpenDrawer}
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      className="w-full cursor-grab"
+      style={style}
+    >
       <CardHeader className="flex-row items-start gap-2 space-y-0">
         <TickCircle
           size="24"

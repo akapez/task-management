@@ -2,52 +2,60 @@
 
 import { FC, useState } from "react";
 
+import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import { useTask } from "@hooks";
+import { TaskStatus } from "@utils/types";
+
 import Drawer from "@components/drawer";
 
-import { data } from "../../../../data";
+import { columns } from "../../../../data";
 import Board from "./board";
 import TaskForm from "./task-form";
 import TaskOperate from "./task-operate";
 
 const ViewTasks: FC = () => {
+  const { allTasks, updateTask } = useTask();
   const [openDrawer, setOpenDrawer] = useState(false);
   const [drawerType, setDrawerType] = useState("NEW");
 
-  const todoTasks = data.filter((task) => task.status === "TODO");
-  const inProgressTasks = data.filter((task) => task.status === "IN_PROGRESS");
-  const completedTasks = data.filter((task) => task.status === "COMPLETED");
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over) return;
+
+    const taskId = active.id as string;
+    const newStatus = over.id as TaskStatus;
+
+    updateTask(taskId, newStatus);
+  };
+
   return (
-    <div className="flex h-screen gap-4 p-4">
-      <Board
-        onOpenDrawer={() => setOpenDrawer(true)}
-        setDrawerType={setDrawerType}
-        title="Todo"
-        tasks={todoTasks}
-        count={todoTasks.length}
-      />
-      <Board
-        onOpenDrawer={() => setOpenDrawer(true)}
-        setDrawerType={setDrawerType}
-        title="In Progress"
-        tasks={inProgressTasks}
-        count={inProgressTasks.length}
-      />
-      <Board
-        onOpenDrawer={() => setOpenDrawer(true)}
-        setDrawerType={setDrawerType}
-        title="Completed"
-        tasks={completedTasks}
-        count={completedTasks.length}
-      />
-      <Drawer
-        title={drawerType === "NEW" ? "Create New Task" : "Edit Task"}
-        isOpen={openDrawer}
-        onCloseDrawer={() => setOpenDrawer(false)}
-      >
-        {drawerType === "NEW" ? null : <TaskOperate />}
-        <TaskForm />
-      </Drawer>
-    </div>
+    <DndContext onDragEnd={handleDragEnd}>
+      <div className="flex h-screen gap-4 p-4">
+        {columns.map((column) => {
+          return (
+            <Board
+              key={column.id}
+              column={column}
+              onOpenDrawer={() => setOpenDrawer(true)}
+              setDrawerType={setDrawerType}
+              tasks={allTasks.filter((task) => task.status === column.id)}
+              count={
+                allTasks.filter((task) => task.status === column.id).length
+              }
+            />
+          );
+        })}
+        <Drawer
+          title={drawerType === "NEW" ? "Create New Task" : "Edit Task"}
+          isOpen={openDrawer}
+          onCloseDrawer={() => setOpenDrawer(false)}
+        >
+          {drawerType === "NEW" ? null : <TaskOperate />}
+          <TaskForm setOpenDrawer={setOpenDrawer} />
+        </Drawer>
+      </div>
+    </DndContext>
   );
 };
 
