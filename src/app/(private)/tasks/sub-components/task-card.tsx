@@ -58,14 +58,16 @@ const TaskCard: FC<TaskCardProps> = ({
 
   return (
     <Card
-      // onClick={onOpenDrawer}
-      ref={setNodeRef}
-      {...listeners}
-      {...attributes}
-      className="w-full cursor-grab"
+      onClick={onOpenDrawer}
+      className="w-full cursor-pointer"
       style={style}
     >
-      <CardHeader className="flex-row items-start gap-2 space-y-0">
+      <CardHeader
+        ref={setNodeRef}
+        {...listeners}
+        {...attributes}
+        className="cursor-grabbing flex-row items-start gap-2 space-y-0"
+      >
         <TickCircle
           size="24"
           color={status === "COMPLETED" ? "#2A7E2E" : "#1C1C1C"}
