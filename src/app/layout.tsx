@@ -35,7 +35,7 @@ export default function RootLayout({
           <TopSearchBar />
           <div className="flex">
             <LeftNavigation />
-            <main className="ml-60 mt-16 h-screen flex-1 bg-gray-100 p-4">
+            <main className="ml-60 mt-16 h-screen flex-1 bg-gray-50 p-4">
               {children}
             </main>
           </div>

@@ -11,7 +11,7 @@ export const formattedDueDate = (timestamp: number): string => {
   return format(date, "MMM d");
 };
 
-export function getRelativeDueDateMessage(timestamp: number): string {
+export function getDueDateMessage(timestamp: number): string {
   const dueDate = new Date(timestamp * 1000);
   const today = new Date();
 

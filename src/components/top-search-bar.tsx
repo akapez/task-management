@@ -9,7 +9,7 @@ import { Input } from "./ui/input";
 
 const TopSearchBar: FC = () => {
   return (
-    <header className="fixed top-0 z-50 flex w-full border-b border-gray-200 bg-white">
+    <header className="fixed top-0 z-40 flex w-full border-b border-gray-200 bg-white">
       <div className="container flex h-16">
         <div className="flex h-full w-60 items-center border-r border-gray-200">
           <Link href="/" className="px-3">

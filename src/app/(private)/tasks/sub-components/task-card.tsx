@@ -1,6 +1,6 @@
 import { FC, Fragment } from "react";
 
-import { formattedDueDate, getRelativeDueDateMessage } from "@utils/helpers";
+import { formattedDueDate, getDueDateMessage } from "@utils/helpers";
 import { Clock, TickCircle } from "iconsax-react";
 
 import { Avatar, AvatarImage } from "@components/ui/avatar";
@@ -15,6 +15,7 @@ interface TaskCardProps {
   date: number;
   priority: "LOW" | "MEDIUM" | "HIGH";
   avatarUrl: string;
+  onOpenDrawer: () => void;
 }
 
 const TaskCard: FC<TaskCardProps> = ({
@@ -24,8 +25,9 @@ const TaskCard: FC<TaskCardProps> = ({
   date,
   priority,
   avatarUrl,
+  onOpenDrawer,
 }) => {
-  let badgeColor: string = "";
+  let badgeColor: string = "bg-blue-100 text-blue-500 hover:bg-blue-100";
   switch (priority) {
     case "LOW":
       badgeColor = "bg-blue-100 text-blue-500 hover:bg-blue-100";
@@ -41,7 +43,7 @@ const TaskCard: FC<TaskCardProps> = ({
       break;
   }
   return (
-    <Card className="w-full">
+    <Card className="w-full cursor-pointer" onClick={onOpenDrawer}>
       <CardHeader className="flex-row items-start gap-2 space-y-0">
         <TickCircle
           size="24"
@@ -75,7 +77,7 @@ const TaskCard: FC<TaskCardProps> = ({
           <CardFooter className="pt-1">
             <div className="flex items-center gap-1 pt-3 text-sm text-dark-500">
               <Clock size="16" color="#1C1C1C" />
-              <span>{getRelativeDueDateMessage(date)}</span>
+              <span>{getDueDateMessage(date)}</span>
             </div>
           </CardFooter>
         </Fragment>
