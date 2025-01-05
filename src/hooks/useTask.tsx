@@ -1,10 +1,15 @@
-import { addItem, updateItemStatus } from "@redux/reducers/taskReducer";
+"use client";
+
+import { useEffect } from "react";
+
 import {
-  selectAllTaskItems,
-  selectCompletedItems,
-  selectInProgressItems,
-  selectTodoItems,
-} from "@redux/selectors/taskSelector";
+  addItem,
+  removeItem,
+  setItems,
+  updateItem,
+  updateItemStatus,
+} from "@redux/reducers/taskReducer";
+import { selectAllTaskItems } from "@redux/selectors/taskSelector";
 import { Task, TaskStatus } from "@utils/types";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -12,24 +17,34 @@ export const useTask = () => {
   const dispatch = useDispatch();
 
   const allTasks = useSelector(selectAllTaskItems);
-  const todoTasks = useSelector(selectTodoItems);
-  const inProgressTasks = useSelector(selectInProgressItems);
-  const completedTasks = useSelector(selectCompletedItems);
+
+  useEffect(() => {
+    const storedTasks = localStorage.getItem("tasks");
+    const tasks = storedTasks ? JSON.parse(storedTasks) : [];
+    dispatch(setItems(tasks));
+  }, []);
 
   const addTask = (task: Task) => {
     dispatch(addItem(task));
   };
 
-  const updateTask = (id: string, status: TaskStatus) => {
+  const updateTask = (id: string, task: Task) => {
+    dispatch(updateItem({ id, task }));
+  };
+
+  const updateTaskStatus = (id: string, status: TaskStatus) => {
     dispatch(updateItemStatus({ id, status }));
+  };
+
+  const deleteTask = (id: string) => {
+    dispatch(removeItem(id));
   };
 
   return {
     addTask,
     updateTask,
+    updateTaskStatus,
+    deleteTask,
     allTasks,
-    todoTasks,
-    inProgressTasks,
-    completedTasks,
   };
 };

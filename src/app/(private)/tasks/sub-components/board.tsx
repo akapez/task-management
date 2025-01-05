@@ -15,6 +15,7 @@ interface BoardProps {
   count: number;
   onOpenDrawer: () => void;
   setDrawerType: (title: string) => void;
+  setTaskDetails: (task: Task | null) => void;
 }
 
 const Board: FC<BoardProps> = ({
@@ -23,6 +24,7 @@ const Board: FC<BoardProps> = ({
   count,
   onOpenDrawer,
   setDrawerType,
+  setTaskDetails,
 }) => {
   const { setNodeRef } = useDroppable({
     id: column.id,
@@ -44,7 +46,14 @@ const Board: FC<BoardProps> = ({
   }
 
   const handleDrawerOpen = (status: string) => {
+    setTaskDetails(null);
     setDrawerType(status);
+    onOpenDrawer();
+  };
+
+  const handleTask = (task: Task) => {
+    setTaskDetails(task);
+    setDrawerType("EDIT");
     onOpenDrawer();
   };
 
@@ -77,7 +86,7 @@ const Board: FC<BoardProps> = ({
           );
           return (
             <TaskCard
-              onOpenDrawer={() => handleDrawerOpen("EDIT")}
+              onOpenDrawer={() => handleTask(task)}
               key={task.id}
               id={task.id}
               title={task.title}

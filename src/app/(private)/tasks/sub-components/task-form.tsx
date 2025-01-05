@@ -40,17 +40,27 @@ import { Textarea } from "@components/ui/text-area";
 import { users } from "../../../../data";
 
 interface TaskFormProps {
+  taskData: Task | null;
+  drawerType: string;
   setOpenDrawer: (state: boolean) => void;
 }
 
-const TaskForm: FC<TaskFormProps> = ({ setOpenDrawer }) => {
+const TaskForm: FC<TaskFormProps> = ({
+  taskData,
+  drawerType,
+  setOpenDrawer,
+}) => {
   const { toast } = useToast();
-  const { addTask } = useTask();
+  const { addTask, updateTask } = useTask();
   const form = useForm<TaskSchema>({
     resolver: zodResolver(taskSchema),
     defaultValues: {
-      title: "",
-      description: "",
+      title: taskData ? taskData.title : "",
+      description: taskData ? taskData.description : "",
+      status: taskData?.status && taskData.status,
+      due_date: taskData ? new Date(taskData.due_date * 1000) : undefined,
+      assignee: taskData?.assignee && taskData.assignee,
+      priority: taskData?.priority && taskData.priority,
     },
   });
 
@@ -63,8 +73,7 @@ const TaskForm: FC<TaskFormProps> = ({ setOpenDrawer }) => {
   const onSubmit: SubmitHandler<TaskSchema> = async (data) => {
     const date = new Date(data.due_date);
     const unixTimestamp = Math.floor(date.getTime() / 1000);
-    const task: Task = {
-      id: uuidv4(),
+    const task = {
       title: data.title,
       description: data.description,
       status: data.status as TaskStatus,
@@ -72,11 +81,24 @@ const TaskForm: FC<TaskFormProps> = ({ setOpenDrawer }) => {
       assignee: data.assignee,
       priority: data.priority as TaskPriority,
     };
-    addTask(task);
+
     setOpenDrawer(false);
-    toast({
-      title: "Task created",
-    });
+    if (drawerType === "NEW") {
+      const newTask: Task = {
+        id: uuidv4(),
+        ...task,
+      };
+      addTask(newTask);
+      toast({ title: "Task created" });
+    } else {
+      const taskId = taskData?.id || "";
+      const oldTask: Task = {
+        id: taskId,
+        ...task,
+      };
+      updateTask(taskId, oldTask);
+      toast({ title: "Task updated" });
+    }
   };
 
   return (
@@ -300,7 +322,7 @@ const TaskForm: FC<TaskFormProps> = ({ setOpenDrawer }) => {
           <Button
             disabled={isSubmitting}
             id="sign-up-btn"
-            className="w-full bg-primary-500 text-primary-foreground hover:bg-primary-500/90"
+            className={`w-full text-primary-foreground ${drawerType === "NEW" ? "bg-primary-500 hover:bg-primary-500/90" : "bg-tertiary-600 hover:bg-tertiary-600/90"}`}
             type="submit"
           >
             {isSubmitting ? (
@@ -308,8 +330,10 @@ const TaskForm: FC<TaskFormProps> = ({ setOpenDrawer }) => {
                 <Loader2 className="animate-spin" />
                 Please wait
               </>
-            ) : (
+            ) : drawerType === "NEW" ? (
               "Create"
+            ) : (
+              "Update"
             )}
           </Button>
         </form>

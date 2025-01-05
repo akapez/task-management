@@ -7,26 +7,33 @@ export interface TaskState {
   tasks: Task[];
 }
 
-const getLocalStorageData = (): Task[] => {
-  const storedTasks = localStorage.getItem("tasks");
-  return storedTasks ? JSON.parse(storedTasks) : [];
-};
-
-const addToLocalStorage = (tasks: Task[]) => {
+const saveToLocalStorage = (tasks: Task[]) => {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 };
 
 const initialState: TaskState = {
-  tasks: getLocalStorageData(),
+  tasks: [],
 };
 
 const taskSlice = createSlice({
   name: "task",
   initialState,
   reducers: {
+    setItems(state, action: PayloadAction<Task[]>) {
+      state.tasks = action.payload;
+    },
     addItem(state, action: PayloadAction<Task>) {
       state.tasks.push(action.payload);
-      addToLocalStorage(state.tasks);
+      saveToLocalStorage(state.tasks);
+    },
+    updateItem(state, action: PayloadAction<{ id: string; task: Task }>) {
+      const taskExist = state.tasks.find(
+        (task) => task.id === action.payload.id
+      );
+      if (taskExist) {
+        Object.assign(taskExist, action.payload.task);
+        saveToLocalStorage(state.tasks);
+      }
     },
     updateItemStatus: (
       state,
@@ -39,11 +46,16 @@ const taskSlice = createSlice({
       const task = state.tasks.find((task) => task.id === id);
       if (task) {
         task.status = status;
-        localStorage.setItem("tasks", JSON.stringify(state.tasks));
+        saveToLocalStorage(state.tasks);
       }
+    },
+    removeItem(state, action: PayloadAction<string>) {
+      state.tasks = state.tasks.filter((task) => task.id !== action.payload);
+      saveToLocalStorage(state.tasks);
     },
   },
 });
 
-export const { addItem, updateItemStatus } = taskSlice.actions;
+export const { addItem, setItems, updateItem, updateItemStatus, removeItem } =
+  taskSlice.actions;
 export default taskSlice.reducer;
