@@ -3,8 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import "./globals.css";
 
-import { Suspense } from "react";
-
 import { StoreProvider } from "@redux/provider";
 import { Toaster } from "@utils/toast-provider";
 
