@@ -34,14 +34,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} h-screen antialiased`}
       >
         <StoreProvider>
           <div className="flex flex-col">
             <TopSearchBar />
             <div className="flex">
               <LeftNavigation />
-              <main className="ml-60 mt-16 h-screen flex-1 bg-gray-50 p-4">
+              <main className="ml-60 mt-16 min-h-screen flex-1 bg-gray-50 p-4">
                 {children}
               </main>
             </div>

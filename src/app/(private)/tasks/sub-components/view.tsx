@@ -48,7 +48,7 @@ const ViewTasks: FC = () => {
   return (
     <Fragment>
       <DndContext onDragEnd={handleDragEnd}>
-        <div className="flex h-screen gap-4 p-4">
+        <div className="flex h-full gap-4 p-4">
           {columns.map((column) => {
             return (
               <Board

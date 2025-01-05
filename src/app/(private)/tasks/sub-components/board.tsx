@@ -3,6 +3,7 @@ import { FC } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { Column, Task } from "@utils/types";
 import { Add, Record } from "iconsax-react";
+import { motion } from "motion/react";
 
 import { Button } from "@components/ui/button";
 
@@ -26,7 +27,7 @@ const Board: FC<BoardProps> = ({
   setDrawerType,
   setTaskDetails,
 }) => {
-  const { setNodeRef } = useDroppable({
+  const { setNodeRef, isOver } = useDroppable({
     id: column.id,
   });
   let circleColor: string = "#FF8A65";
@@ -58,9 +59,15 @@ const Board: FC<BoardProps> = ({
   };
 
   return (
-    <div
+    <motion.div
       ref={setNodeRef}
-      className="flex w-1/3 flex-col rounded-lg border-2 border-dashed border-dark-100 p-4"
+      className="flex w-1/3 flex-col rounded-lg border-2 p-4"
+      animate={{
+        borderColor: isOver ? "#0247B3" : "#C8C8C8",
+        borderStyle: isOver ? "solid" : "dashed",
+        boxShadow: isOver ? "0px 4px 20px #6298EB" : "none",
+      }}
+      transition={{ type: "spring", stiffness: 500, damping: 30 }}
     >
       <div className="flex items-center justify-between rounded-lg bg-white px-4 py-4 shadow-sm">
         <div className="flex items-center gap-2">
@@ -107,7 +114,7 @@ const Board: FC<BoardProps> = ({
           Add task
         </Button>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

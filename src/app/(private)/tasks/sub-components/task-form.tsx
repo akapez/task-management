@@ -204,6 +204,7 @@ const TaskForm: FC<TaskFormProps> = ({
                         </PopoverTrigger>
                         <PopoverContent className="w-full p-0" align="start">
                           <Calendar
+                            id="due_date"
                             mode="single"
                             selected={field.value}
                             onSelect={field.onChange}
